@@ -1,5 +1,8 @@
 # ISAT插件 - 自动标注
 
+<a href='https://pypi.org/project/isat-plugin-auto_annotate/' target="_blank"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/isat-plugin-auto_annotate"></a>
+<a href='https://pypi.org/project/isat-plugin-auto_annotate/' target="_blank"><img alt="Pepy Total Downlods" src="https://img.shields.io/pepy/dt/isat-plugin-auto_annotate"></a>
+
 这是一个[ISAT](https://github.com/yatengLG/ISAT_with_segment_anything)的插件开发示例。
 
 仅使用240行代码，开发一个带界面的ISAT插件，为ISAT提供基于yolo模型的自动标注功能。
