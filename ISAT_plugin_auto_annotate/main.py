@@ -4,7 +4,7 @@
 import os.path
 from PyQt5 import QtCore, QtWidgets
 from ISAT.widgets.plugin_base import PluginBase
-from ISAT_plugin_auto_annotate.yolo import DetectModel
+from ISAT_plugin_auto_annotate.yolo import YOLOModel
 from ISAT.widgets.polygon import Rect
 
 
@@ -32,7 +32,11 @@ class AutoAnnotatePlugin(PluginBase):
         return "yatengLG"
 
     def get_plugin_version(self) -> str:
-        return "1.0.0"
+        try:
+            from ISAT_plugin_auto_annotate import __version__
+        except ModuleNotFoundError:
+            __version__ = "unknown"
+        return __version__
 
     def get_plugin_description(self) -> str:
         return "Auto annotation by ultralytics."
@@ -100,7 +104,7 @@ class AutoAnnotatePlugin(PluginBase):
                                                              filter=filter)
         if path:
             try:
-                self.detector = DetectModel(path, 0.25)
+                self.detector = YOLOModel(path, 0.25)
                 self.checkpoint_edit.setText(os.path.split(path)[-1])
             except Exception as e:
                 print(e)

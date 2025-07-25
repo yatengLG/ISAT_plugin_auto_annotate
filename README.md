@@ -2,13 +2,15 @@
 
 这是一个[ISAT](https://github.com/yatengLG/ISAT_with_segment_anything)的插件开发示例。
 
-仅使用240行代码，开发一个带界面的ISAT插件，为ISAT提供基于yolo目标检测模型的自动标注功能。
+仅使用240行代码，开发一个带界面的ISAT插件，为ISAT提供基于yolo模型的自动标注功能。
+
+该插件使用yolo计算目标框，然后通过sam框提示进行目标分割。
 
 ![auto_annotate.img](display/img.png)
 
 ## 功能
 
-* 可导入其他模型（项目提供了yolo11n.onnx模型供测试）
+* 可导入其他模型（项目提供了yolo11n.onnx模型以及yolo11n-seg.onnx模型供测试）
 * 兼容IAST，支持所有ISAT提供的sam模型
 
 ## 安装与使用
@@ -31,11 +33,13 @@ pip install isat-plugin-auto-annotate
 ### 模型文件
 项目使用带**nms**的onnx模型。
 
-支持所有经nms后输出shape为[n, 6]格式数据的模型，具体表示n个[xmin, ymin, xmax, ymax, score, category_index]
+对于目标检测模型，支持所有经nms后输出shape为[n, 6]格式数据的模型，具体表示n个[xmin, ymin, xmax, ymax, score, category_index]
+对于图像分割模型，支持所有经nms后输出shape为[n, N]格式数据的模型，具体表示n个[xmin, ymin, xmax, ymax, score, category_index, ...]
 
 以ultralytics导出yolov11模型为例：
 ```shell
 yolo export model=path/to/yolo11n.pt format=onnx nms=True iou=0.45
+yolo export model=path/to/yolo11n-seg.pt format=onnx nms=True iou=0.45
 ```
 
 ### 类别文件

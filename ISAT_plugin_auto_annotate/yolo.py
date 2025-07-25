@@ -6,7 +6,7 @@ import numpy as np
 import onnxruntime as ort
 
 
-class DetectModel:
+class YOLOModel:
     def __init__(self, model, score_threshold=0.25):
         self.session = ort.InferenceSession(model)
         self.score_threshold = score_threshold
@@ -37,8 +37,9 @@ class DetectModel:
 
         img, r = self.preprocess(img)
 
-        outputs = self.session.run(['output0'], {'images': img.astype(np.float32)})
-        outputs = outputs[0][0]
+        outputs = self.session.run(['output0'], {'images': img.astype(np.float32)}) # [(1, 300, 38) | (1, 300, 6)]
+        outputs = outputs[0][0] # (300, 38) | (300, 6)
+        outputs = outputs[:, :6]
         outputs = outputs[outputs[:, 4] > self.score_threshold]
 
         #
@@ -49,6 +50,4 @@ class DetectModel:
         outputs[:, 3] = np.clip(outputs[:, 3], 0, ori_h)
 
         return outputs
-
-
 
