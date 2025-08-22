@@ -32,6 +32,7 @@ setup(
     python_requires=">=3.8",                            # python 版本要求
     install_requires=[
         'isat-sam>=1.4.0',
+        'onnxruntime'
     ],
 
     classifiers=[
