@@ -76,6 +76,19 @@ class AutoAnnotatePlugin(PluginBase):
         layout.addWidget(self.category_edit)
         layout.addWidget(self.category_button)
 
+        widget = QtWidgets.QWidget()
+        widget.setMaximumHeight(36)
+        layout = QtWidgets.QHBoxLayout(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.addWidget(widget)
+
+        self.auto_checkbox = QtWidgets.QCheckBox('Auto')
+        self.auto_checkbox.setChecked(True)
+        self.manual_button = QtWidgets.QPushButton('Manual')
+        self.manual_button.clicked.connect(self.auto_annotate)
+        layout.addWidget(self.auto_checkbox)
+        layout.addWidget(self.manual_button)
+
         self.result_table = QtWidgets.QTableWidget()
         self.result_table.setColumnCount(6)
         self.result_table.horizontalHeader().setSectionResizeMode(5, QtWidgets.QHeaderView.Stretch)
@@ -127,13 +140,20 @@ class AutoAnnotatePlugin(PluginBase):
             except Exception as e:
                 print(e)
 
+    def after_image_open_event(self):
+        self.manual_button.setEnabled(False)
+        self.result_table.setRowCount(0)
+        self.processbar.setValue(0)
+
     def after_sam_encode_finished_event(self, index):
         if self.detector is None:
             return
 
         if self.mainwindow.use_segment_anything:
             if self.mainwindow.current_index == index:
-                self.auto_annotate()
+                self.manual_button.setEnabled(True)
+                if self.auto_checkbox.isChecked():
+                    self.auto_annotate()
 
     def auto_annotate(self):
         if self.detector is None:
@@ -141,6 +161,9 @@ class AutoAnnotatePlugin(PluginBase):
 
         self.mainwindow.scene.accept_mouse_events = False
         self.checkpoint_button.setEnabled(False)
+        self.category_button.setEnabled(False)
+        self.auto_checkbox.setEnabled(False)
+        self.manual_button.setEnabled(False)
         self.result_table.setRowCount(0)
         self.processbar.setValue(0)
 
@@ -180,3 +203,6 @@ class AutoAnnotatePlugin(PluginBase):
         finally:
             self.mainwindow.scene.accept_mouse_events = True
             self.checkpoint_button.setEnabled(True)
+            self.category_button.setEnabled(True)
+            self.auto_checkbox.setEnabled(True)
+            self.manual_button.setEnabled(True)
