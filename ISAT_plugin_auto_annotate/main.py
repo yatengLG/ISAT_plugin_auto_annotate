@@ -6,6 +6,8 @@ from PyQt5 import QtCore, QtWidgets
 from ISAT.widgets.plugin_base import PluginBase
 from ISAT_plugin_auto_annotate.yolo import YOLOModel
 from ISAT.widgets.polygon import Rect
+from ISAT import __version__
+from packaging.version import parse
 
 
 class AutoAnnotatePlugin(PluginBase):
@@ -179,14 +181,22 @@ class AutoAnnotatePlugin(PluginBase):
                 category = str(self.category_dict.get(category_index, category_index))
 
                 self.mainwindow.scene.start_segment_anything_box()
-                self.mainwindow.scene.current_sam_rect = Rect()
-                self.mainwindow.scene.addItem(self.mainwindow.scene.current_sam_rect)
-                self.mainwindow.scene.current_sam_rect.addPoint(QtCore.QPointF(xmin, ymin))
-                self.mainwindow.scene.current_sam_rect.addPoint(QtCore.QPointF(xmax, ymax))
+                if parse(__version__) > parse("1.5.1"):
+                    self.mainwindow.scene.prompt_box_item = Rect()
+                    self.mainwindow.scene.addItem(self.mainwindow.scene.prompt_box_item)
+                    self.mainwindow.scene.prompt_box_item.addPoint(QtCore.QPointF(xmin, ymin))
+                    self.mainwindow.scene.prompt_box_item.addPoint(QtCore.QPointF(xmax, ymax))
+                    self.mainwindow.scene.update_mask()
+                    self.mainwindow.current_category = category
+                    self.mainwindow.scene.finish_draw()
+                else:
+                    self.mainwindow.scene.current_sam_rect = Rect()
+                    self.mainwindow.scene.addItem(self.mainwindow.scene.current_sam_rect)
+                    self.mainwindow.scene.current_sam_rect.addPoint(QtCore.QPointF(xmin, ymin))
+                    self.mainwindow.scene.current_sam_rect.addPoint(QtCore.QPointF(xmax, ymax))
                 self.mainwindow.scene.update_mask()
                 self.mainwindow.current_category = category
                 self.mainwindow.scene.finish_draw()
-
 
                 self.result_table.insertRow(self.result_table.rowCount())
                 self.result_table.setItem(i, 0, QtWidgets.QTableWidgetItem('{:4.0f}'.format(xmin)))
