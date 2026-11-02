@@ -5,10 +5,16 @@ import os.path
 from PyQt5 import QtCore, QtWidgets
 from ISAT.widgets.plugin_base import PluginBase
 from ISAT_plugin_auto_annotate.yolo import YOLOModel
-from ISAT.widgets.polygon import Rect
 from ISAT import __version__
 from packaging.version import parse
 
+try:
+    from ISAT.widgets.polygon import Rect
+except ImportError:
+    try:
+        from ISAT.widgets.polygon import PromptRect as Rect
+    except ImportError:
+        Rect = None  # 或抛出更明确的错误
 
 class AutoAnnotatePlugin(PluginBase):
     def __init__(self):
